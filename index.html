@@ -167,7 +167,7 @@
         </div>
       </div>
       <div class="slider">
-        <label>予算の上限（1人あたり）<b><span id="priceVal">指定なし</span></b></label>
+        <label>予算の上限（1人あたり・目安）<b><span id="priceVal">指定なし</span></b></label>
         <div class="chips" id="priceChips"></div>
       </div>
       <label class="toggle"><input type="checkbox" id="openNow" /> 今営業している店だけ</label>
@@ -228,7 +228,7 @@ let shownCount = 0;
 const PAGE = 8;
 let maxPrice = 0;           // 0=指定なし, 1..4=priceLevel上限
 const PRICE_NUM = {PRICE_LEVEL_FREE:0,PRICE_LEVEL_INEXPENSIVE:1,PRICE_LEVEL_MODERATE:2,PRICE_LEVEL_EXPENSIVE:3,PRICE_LEVEL_VERY_EXPENSIVE:4};
-const PRICE_OPTS = [{t:"指定なし",v:0},{t:"¥",v:1},{t:"¥¥",v:2},{t:"¥¥¥",v:3},{t:"¥¥¥¥",v:4}];
+const PRICE_OPTS = [{t:"指定なし",v:0},{t:"¥1,000以下",v:1},{t:"¥3,000以下",v:2},{t:"¥5,000以下",v:3},{t:"¥10,000以下",v:4}];
 
 /* ---------- tiny helpers ---------- */
 const $ = id => document.getElementById(id);
@@ -246,7 +246,7 @@ function haversine(a,b){
   return 2*R*Math.asin(Math.sqrt(s));
 }
 function fmtDist(m){ return m<1000 ? Math.round(m)+"m" : (m/1000).toFixed(1)+"km"; }
-const PRICE={PRICE_LEVEL_INEXPENSIVE:"¥",PRICE_LEVEL_MODERATE:"¥¥",PRICE_LEVEL_EXPENSIVE:"¥¥¥",PRICE_LEVEL_VERY_EXPENSIVE:"¥¥¥¥"};
+const PRICE={PRICE_LEVEL_INEXPENSIVE:"〜¥1,000",PRICE_LEVEL_MODERATE:"¥1,000〜3,000",PRICE_LEVEL_EXPENSIVE:"¥3,000〜5,000",PRICE_LEVEL_VERY_EXPENSIVE:"¥5,000〜10,000"};
 function esc(s){ return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 
 /* ---------- build UI ---------- */
@@ -268,7 +268,7 @@ function buildPriceChips(){
     const el=document.createElement("div");
     el.className="chip"+(o.v===maxPrice?" active":"");
     el.textContent=o.t;
-    el.onclick=()=>{ maxPrice=o.v; $("priceVal").textContent=o.v===0?"指定なし":o.t+" 以下"; buildPriceChips(); };
+    el.onclick=()=>{ maxPrice=o.v; $("priceVal").textContent=o.t; buildPriceChips(); };
     box.appendChild(el);
   });
 }
