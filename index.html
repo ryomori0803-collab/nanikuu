@@ -221,7 +221,7 @@ const PAGE = 8;
 
 /* ---------- tiny helpers ---------- */
 const $ = id => document.getElementById(id);
-const EMBEDDED_KEY = "AIzaSyD3kbZ9q9V6m-jpNdXhFf0wvyKI59Dd8Fw"; // 設定済みキー（このPC/ファイル用）
+const EMBEDDED_KEY = "AIzaSyBROy97Eq6Ljj7T8TefF_uKbFgvWWwbphY"; // github.io ドメイン限定の公開用キー
 function getKey(){ try{ return localStorage.getItem("gm_key")||EMBEDDED_KEY; }catch(e){ return window.__key||EMBEDDED_KEY; } }
 function setKey(k){ try{ localStorage.setItem("gm_key",k); }catch(e){ window.__key=k; } }
 function toast(msg){ $("status").innerHTML = '<div class="status">'+msg+'</div>'; }
