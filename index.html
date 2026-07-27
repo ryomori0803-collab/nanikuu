@@ -89,6 +89,10 @@
   .badge.dist{background:#eef6ff;color:#2f6fbf}
   .badge.open{background:#e9f7ef;color:var(--ok)}
   .badge.price{background:#fff5e6;color:#b7791f}
+  .card .name a.tblink{color:inherit;text-decoration:none}
+  .card .name a.tblink:hover{text-decoration:underline}
+  .tbtag{display:inline-block;font-size:11px;font-weight:800;color:#fff;background:#ff6a00;
+    border-radius:5px;padding:2px 6px;margin-left:8px;vertical-align:middle;white-space:nowrap}
   .addr{font-size:12.5px;color:var(--sub);margin:0 0 12px;line-height:1.45}
   .actions{display:flex;gap:9px}
   .actions a{flex:1;text-align:center;text-decoration:none;border-radius:11px;padding:10px;
@@ -162,6 +166,10 @@
           <input type="range" id="radius" min="300" max="3000" step="100" value="1000" />
         </div>
       </div>
+      <div class="slider">
+        <label>予算の上限（1人あたり）<b><span id="priceVal">指定なし</span></b></label>
+        <div class="chips" id="priceChips"></div>
+      </div>
       <label class="toggle"><input type="checkbox" id="openNow" /> 今営業している店だけ</label>
     </div>
 
@@ -218,6 +226,9 @@ let mapsReady = false;
 let lastResults = [];       // filtered+sorted
 let shownCount = 0;
 const PAGE = 8;
+let maxPrice = 0;           // 0=指定なし, 1..4=priceLevel上限
+const PRICE_NUM = {PRICE_LEVEL_FREE:0,PRICE_LEVEL_INEXPENSIVE:1,PRICE_LEVEL_MODERATE:2,PRICE_LEVEL_EXPENSIVE:3,PRICE_LEVEL_VERY_EXPENSIVE:4};
+const PRICE_OPTS = [{t:"指定なし",v:0},{t:"¥",v:1},{t:"¥¥",v:2},{t:"¥¥¥",v:3},{t:"¥¥¥¥",v:4}];
 
 /* ---------- tiny helpers ---------- */
 const $ = id => document.getElementById(id);
@@ -250,6 +261,18 @@ function buildChips(){
   });
 }
 buildChips();
+
+function buildPriceChips(){
+  const box=$("priceChips"); box.innerHTML="";
+  PRICE_OPTS.forEach(o=>{
+    const el=document.createElement("div");
+    el.className="chip"+(o.v===maxPrice?" active":"");
+    el.textContent=o.t;
+    el.onclick=()=>{ maxPrice=o.v; $("priceVal").textContent=o.v===0?"指定なし":o.t+" 以下"; buildPriceChips(); };
+    box.appendChild(el);
+  });
+}
+buildPriceChips();
 
 $("minRating").oninput=e=>$("ratingVal").textContent=(+e.target.value).toFixed(1);
 $("minReviews").oninput=e=>$("revVal").textContent=e.target.value;
@@ -346,7 +369,9 @@ async function runSearch(){
     let filtered=places.filter(p=>{
       const r=p.rating||0, n=p.userRatingCount||0;
       const alive=p.businessStatus?String(p.businessStatus).indexOf("CLOSED_PERMANENTLY")<0:true;
-      return r>=minRating && n>=minReviews && alive;
+      const pv=PRICE_NUM[p.priceLevel];
+      const priceOk=maxPrice===0 || pv===undefined || pv<=maxPrice; // 価格不明は除外しない
+      return r>=minRating && n>=minReviews && alive && priceOk;
     });
 
     // optional open-now (best effort)
@@ -385,10 +410,11 @@ function cardHTML(p){
   const uri=p.googleMapsURI||("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(p.displayName||""));
   const dir="https://www.google.com/maps/dir/?api=1&destination="+
     (p.location?p.location.lat()+","+p.location.lng():encodeURIComponent(p.displayName||""));
+  const tb="https://tabelog.com/rstLst/?sw="+encodeURIComponent(p.displayName||"");
   return `<div class="card" data-id="${esc(p.id||p.displayName||"")}">
     ${photo?`<img class="photo" src="${photo}" alt="" loading="lazy">`:`<div class="nophoto">写真なし</div>`}
     <div class="body">
-      <p class="name">${esc(p.displayName||"名称不明")}</p>
+      <p class="name"><a class="tblink" href="${tb}" target="_blank" rel="noopener">${esc(p.displayName||"名称不明")}<span class="tbtag">食べログ↗</span></a></p>
       <div class="meta">
         <span class="rate"><span class="star">★</span> ${r}</span>
         <span class="rev">(${n}件)</span>
