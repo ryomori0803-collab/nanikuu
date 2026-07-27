@@ -410,7 +410,8 @@ function cardHTML(p){
   const uri=p.googleMapsURI||("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(p.displayName||""));
   const dir="https://www.google.com/maps/dir/?api=1&destination="+
     (p.location?p.location.lat()+","+p.location.lng():encodeURIComponent(p.displayName||""));
-  const tb="https://tabelog.com/rstLst/?sw="+encodeURIComponent(p.displayName||"");
+  const tbArea=(p.formattedAddress||"").match(/([一-鿿]{2,10}?[区市郡町村])/);
+  const tb="https://www.google.com/search?q="+encodeURIComponent((p.displayName||"")+(tbArea?" "+tbArea[1]:"")+" 食べログ");
   return `<div class="card" data-id="${esc(p.id||p.displayName||"")}">
     ${photo?`<img class="photo" src="${photo}" alt="" loading="lazy">`:`<div class="nophoto">写真なし</div>`}
     <div class="body">
