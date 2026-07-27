@@ -1,0 +1,17 @@
+{
+  "name": "なにくう",
+  "short_name": "なにくう",
+  "description": "周辺の食べログ的に高評価だけをピックアップ",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#E23744",
+  "theme_color": "#E23744",
+  "lang": "ja",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
